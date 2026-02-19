@@ -1,22 +1,18 @@
-#import pygame
+from tkinter import *
 import random
 
-palavras = ["PARDO","BARCO","VERDE","ANZOL","LABIO","PUNIR","CASAL","PULSO","FALSO","PILHA","CACHO","ZEBRA","FERRO","PRETO"]
-palavra_escolhida = palavras[random.randint(0, len(palavras)-1)]
-chute = ""
-
-def main():
-    print("Bem vindo ao Termo (feito em python)")
-    checar_chute()
+app = Tk()
+app.title("Termo")
+app.geometry("500x500")
+app.configure(background="#dde")
+chute = "BARCO"
 
 def checar_chute():
-    chute = input("Digite seu chute: ")
-
-    chute = chute.upper()
+    global chute
+    print(chute)
     #primeiro verifica se o chute tem 5 letras
     if len(chute) != 5:
         print("O chute deve conter 5 letras.")
-        return
     
     if chute == palavra_escolhida:
         print(f"Parabéns, você acertou! A palavra era: {palavra_escolhida}.")
@@ -27,6 +23,17 @@ def checar_chute():
             else:
                 print(f"A letra {letra} não está na palavra.")
         print("Continue tentando.")
-        checar_chute()
+        chute = ""
 
-main()
+Label(app, text="Bem-vindo ao Termo em Python!",background = "#dde",foreground="#009",anchor=W).place(x=10, y=10,width=200,height=20)
+input_t = Entry(app)
+input_t.place(x=10,y=40,width=200,height=40)
+button = Button(app,text="Me clique!")
+button.place(x=10,y=90)
+button.config(command=checar_chute)
+
+palavras = ["PARDO","BARCO","VERDE","ANZOL","LABIO","PUNIR","CASAL","PULSO","FALSO","PILHA","CACHO","ZEBRA","FERRO","PRETO"]
+palavra_escolhida = palavras[random.randint(0, len(palavras)-1)]
+app.mainloop()
+
+
