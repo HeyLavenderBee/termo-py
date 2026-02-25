@@ -8,6 +8,8 @@ app.title("Termo")
 app.geometry("500x500")
 app.configure(background="#dde")
 chute = ""
+tentativas = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
+cur_round = 0
 entry_str = StringVar()
 response = StringVar()
 letra1 = StringVar()
@@ -15,6 +17,8 @@ letra2 = StringVar()
 letra3 = StringVar()
 letra4 = StringVar()
 letra5 = StringVar()
+
+globals()["letras1"] = letra1
 
 palavras = []
 palavra_escolhida = ""
@@ -29,16 +33,17 @@ result_label = Label(app, text="a",background = "#dde",textvariable=response).pl
 main_frame = Frame(app, padx=30,pady=30,bg="#dde")
 main_frame.place(x=20,y=150,width=190,height=300)
 
-label1 = Label(main_frame, background="gray",textvariable=letra1)
-label1.place(width=25,height=25,anchor="center")
-label2 = Label(main_frame, background="gray",textvariable=letra2)
-label2.place(x=30,width=25,height=25,anchor="center")
-label3 = Label(main_frame, background="gray",textvariable=letra3)
-label3.place(x=60,width=25,height=25,anchor="center")
-label4 = Label(main_frame, background="gray",textvariable=letra4)
-label4.place(x=90,width=25,height=25,anchor="center")
-label5 = Label(main_frame, background="gray",textvariable=letra5)
-label5.place(x=120,width=25,height=25,anchor="center")
+posy = 30
+def create_line(colors):
+    posx = 0
+    global posy
+    global cur_round
+    for i in range(5):
+        Label(main_frame, background=colors[i],text=tentativas[cur_round][i]).place(x=posx,y=posy,width=25,height=25,anchor="center")
+        posx += 30
+    posy += 30
+    cur_round += 1
+    posx = 0
 
 def read_words_from_csv():
     df = pandas.read_csv("words.csv", usecols=["PALAVRA"])
@@ -58,49 +63,18 @@ def read_words_from_csv():
     
 read_words_from_csv()
 
-def change_label_bgcolor_green(n):
-    n += 1
-    if n == 1:
-        label1.config(background="green")
-    elif n == 2:
-        label2.config(background="green")
-    elif n == 3:
-        label3.config(background="green")
-    elif n == 4:
-        label4.config(background="green")
-    elif n == 5:
-        label5.config(background="green")
-
-def change_label_bgcolor_yellow(n):
-    n += 1
-    if n == 1:
-        label1.config(background="yellow")
-    elif n == 2:
-        label2.config(background="yellow")
-    elif n == 3:
-        label3.config(background="yellow")
-    elif n == 4:
-        label4.config(background="yellow")
-    elif n == 5:
-        label5.config(background="yellow")
-
-def change_label_bgcolor_gray(n):
-    n += 1
-    if n == 1:
-        label1.config(background="gray")
-    elif n == 2:
-        label2.config(background="gray")
-    elif n == 3:
-        label3.config(background="gray")
-    elif n == 4:
-        label4.config(background="gray")
-    elif n == 5:
-        label5.config(background="gray")
+def end_game():
+    print(f"Você alcançou o limite de tentativas, a palavra era: {palavra_escolhida}")
 
 def checar_chute():
     global chute
+    global cur_round
     chute = entry.get()
     chute = chute.upper()
+    
+    if cur_round >= 6:
+        end_game()
+        return
     
     #primeiro verifica se o chute tem 5 letras
     if len(chute) != 5:
@@ -108,29 +82,28 @@ def checar_chute():
         return
     
     entry_str.set("")
-    letra1.set(chute[0])
-    letra2.set(chute[1])
-    letra3.set(chute[2])
-    letra4.set(chute[3])
-    letra5.set(chute[4])
-    
+
     if chute == palavra_escolhida:
         response.set(f"Parabéns, você acertou! A palavra era: {palavra_escolhida}.")
-        change_label_bgcolor_green(0)
-        change_label_bgcolor_green(1)
-        change_label_bgcolor_green(2)
-        change_label_bgcolor_green(3)
-        change_label_bgcolor_green(4)
+        for letra in chute:
+            tentativas[cur_round] += letra
+        create_line(["green", "green", "green", "green", "green"])
     else:
         i = 0
+        colors = []
         for letra in chute:
+            tentativas[cur_round] += letra
             if letra in palavra_escolhida:
-                change_label_bgcolor_yellow(i)
                 if palavra_escolhida[i] == letra:
-                    change_label_bgcolor_green(i)
+                    colors.append("green")
+                else:
+                    colors.append("yellow")
             else:
-                change_label_bgcolor_gray(i)
+                colors.append("gray")
             i += 1
+        print(colors)
+        create_line(colors)
+        colors = []
         response.set("Continue tentando.")
         chute = ""
 
