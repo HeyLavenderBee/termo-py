@@ -1,15 +1,73 @@
+import sys
 from tkinter import *
 import random
 import pandas
-import numpy
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMenuBar, QMainWindow
 
-app = Tk()
-app.title("Termo")
-app.geometry("500x500")
-app.configure(background="#dde")
-chute = ""
-tentativas = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
+guess = ""
+guess_list = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
 cur_round = 0
+words = []
+chosen_word = ""
+
+def read_words_from_csv():
+    df = pandas.read_csv("words.csv", usecols=["PALAVRA"])
+    data_array = df.to_numpy()
+    i = 0
+    for data in data_array:
+        data = str(data).replace("['","")
+        data = data.replace("']","")
+        data = data.upper()
+        words.append(data)
+        i += 1
+    global chosen_word
+    chosen_word = words[random.randint(0, len(words)-1)]
+    print("Entre um total de: ",i,"itens, a palavra é: ", chosen_word)
+    
+def check_word():
+    chosen_word = input.text()
+    title.setText(chosen_word)
+    title.adjustSize()
+
+def end_game():
+    print(f"Você alcançou o limite de tentativas, a palavra era: {chosen_word}")
+
+
+
+# ----------- FRONT-END (widgets and style) ----------
+
+class ButtonHolder(QWidget):
+    def __init__ (self):
+        super().__init__()
+        self.resize(600,500)
+        self.setWindowTitle("Termo em Python")
+        button = QPushButton("hey", self)
+        button.setGeometry(100,100,100,100)
+        """
+        
+        title.move(160, 40)
+        title.setStyleSheet("font-size: 20px; background-color: gray; border-radius: 3px; padding: 3px")
+
+        input = QLineEdit("", window)
+        input.move(170, 95)
+
+        btn = QPushButton("Adicionar palavra", window)
+        btn.setGeometry(170, 140, 120, 30)
+        btn.setStyleSheet("color: blue")
+        btn.clicked.connect(check_word)
+        """
+
+app = QApplication(sys.argv)
+
+window = ButtonHolder()
+window.show()
+app.exec()
+
+'''
+app = Tk()
+app.title("Termo em Python")
+app.geometry("500x500")
+app.configure(background="#212121")
 entry_str = StringVar()
 response = StringVar()
 letra1 = StringVar()
@@ -23,14 +81,14 @@ globals()["letras1"] = letra1
 palavras = []
 palavra_escolhida = ""
 
-Label(app, text="Bem-vindo ao Termo em Python!",background = "#dde",foreground="#009",anchor=W).place(x=10, y=10,width=200,height=20)
-entry = Entry(app, textvariable=entry_str)
-entry.place(x=10,y=40,width=200,height=40)
+Label(app, text="Bem-vindo ao Termo em Python!",background = "#212121",foreground="#009",anchor=W).place(x=10, y=10,width=200,height=20)
+entry = Entry(app, textvariable=entry_str, font=("Calibri 13"))
+entry.place(x=10,y=40,width=180,height=30)
 button = Button(app,text="Adicionar palavra")
 button.place(x=10,y=90)
-result_label = Label(app, text="a",background = "#dde",textvariable=response).place(x=10,y=120)
+result_label = Label(app, text="a",background = "#212121",textvariable=response).place(x=10,y=120)
 
-main_frame = Frame(app, padx=30,pady=30,bg="#dde")
+main_frame = Frame(app, padx=30,pady=30,bg="#212121")
 main_frame.place(x=20,y=150,width=190,height=300)
 
 posy = 30
@@ -48,7 +106,6 @@ def create_line(colors):
 def read_words_from_csv():
     df = pandas.read_csv("words.csv", usecols=["PALAVRA"])
     data_array = df.to_numpy()
-    print(data_array)
     i = 0
     for data in data_array:
         data = str(data).replace("['","")
@@ -57,7 +114,6 @@ def read_words_from_csv():
         palavras.append(data)
         i += 1
     global palavra_escolhida
-    print(palavras)
     palavra_escolhida = palavras[random.randint(0, len(palavras)-1)]
     print("Entre um total de: ",i,"itens, a palavra é: ",palavra_escolhida)
     
@@ -101,7 +157,6 @@ def checar_chute():
             else:
                 colors.append("gray")
             i += 1
-        print(colors)
         create_line(colors)
         colors = []
         response.set("Continue tentando.")
@@ -109,6 +164,4 @@ def checar_chute():
 
 button.config(command=checar_chute)
 app.mainloop()
-
-
-
+'''
