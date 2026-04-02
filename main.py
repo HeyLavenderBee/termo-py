@@ -1,61 +1,9 @@
 import sys
 from tkinter import *
-import random
-import pandas
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLabel, QLineEdit, QMenuBar, QMainWindow
-
-guess = ""
-guess_list = {0: [], 1: [], 2: [], 3: [], 4: [], 5: []}
-cur_round = 0
-words = []
-chosen_word = ""
-
-def read_words_from_csv():
-    df = pandas.read_csv("words.csv", usecols=["PALAVRA"])
-    data_array = df.to_numpy()
-    i = 0
-    for data in data_array:
-        data = str(data).replace("['","")
-        data = data.replace("']","")
-        data = data.upper()
-        words.append(data)
-        i += 1
-    global chosen_word
-    chosen_word = words[random.randint(0, len(words)-1)]
-    print("Entre um total de: ",i,"itens, a palavra é: ", chosen_word)
-    
-def check_word():
-    chosen_word = input.text()
-    title.setText(chosen_word)
-    title.adjustSize()
-
-def end_game():
-    print(f"Você alcançou o limite de tentativas, a palavra era: {chosen_word}")
-
-
 
 # ----------- FRONT-END (widgets and style) ----------
-
-class ButtonHolder(QWidget):
-    def __init__ (self):
-        super().__init__()
-        self.resize(600,500)
-        self.setWindowTitle("Termo em Python")
-        button = QPushButton("hey", self)
-        button.setGeometry(100,100,100,100)
-        """
-        
-        title.move(160, 40)
-        title.setStyleSheet("font-size: 20px; background-color: gray; border-radius: 3px; padding: 3px")
-
-        input = QLineEdit("", window)
-        input.move(170, 95)
-
-        btn = QPushButton("Adicionar palavra", window)
-        btn.setGeometry(170, 140, 120, 30)
-        btn.setStyleSheet("color: blue")
-        btn.clicked.connect(check_word)
-        """
+from PyQt6.QtWidgets import QApplication
+from game_holder import ButtonHolder
 
 app = QApplication(sys.argv)
 
